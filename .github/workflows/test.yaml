@@ -1,33 +1,26 @@
-name: Run Tests on Pull Request
+name: Run Tests on Pull Request on main
 
 on:
   pull_request:
-    branches:
-      
-main
+    branches: 
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    steps:
-    # 1. Vérifier le code du dépôt
-    
-name: Checkout repository
-    uses: actions/checkout@v3
+    steps:   
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
-    # 2. Installer les dépendances (exemple pour Node.js)
-    
-name: Set up Node.js
-    uses: actions/setup-node@v3
-    with:
-      node-version: 16
+      - name: Checkout repository 
+        uses: actions/checkout@v4
+      
+      - name: Install python
+        run: uv python install
 
-    
-name: Install dependencies
-    run: npm install
+      - name: Set up project structure
+        run: uv sync
 
-    # 3. Lancer les tests
-    
-name: Run tests
-    run: npm test
+      - name: Run tests
+        run: uv run pytest tests/
