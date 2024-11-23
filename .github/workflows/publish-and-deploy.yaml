@@ -1,10 +1,7 @@
-name: Docker Build, Publish & Deploy
+name: CD/ Build Publish and Deploy
 
 env:
   AZURE_WEBAPP_NAME: cloud-isen-bg
-  WORKING_DIRECTORY: '.'        # set this to the path to your path of working directory inside github repository, defaults to the repository root
-  PYTHON_VERSION: '3.12'        # set the version to use
-  STARTUP_COMMAND: ''           # set this to the startup command required to start the gunicorn server. default it is empty
   CONTAINER_REGISTRY : isencloudbg.azurecr.io
 
 
@@ -19,11 +16,11 @@ permissions:
   id-token: write
   
 jobs:
-  build_and_publish:
+  Build_and_Publish_Github:
     runs-on: ubuntu-latest
 
     steps:
-      - name: set lower case repo name
+      - name: Set lower case repo name
         run: echo "REPO_LC=${REPO,,}" >>${GITHUB_ENV}
         env:
           REPO: '${{ github.repository }}'
@@ -41,27 +38,24 @@ jobs:
       - name: Build Docker image
         run: docker build -t ghcr.io/$REPO_LC:latest . 
             
-      - name: Publish Docker image
+      - name: Publish Docker image to github container-registry
         run: docker push ghcr.io/$REPO_LC:latest
 
-  # Dowanload_azure:
-  #   runs-on: ubuntu-latest
-  #   needs: build_and_publish
-  #   steps: 
-  #   - name: Install Azure CLI
-  #     run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-  Deploy_to_azure:
+  Build_Publish_Deploy_Azure:
     permissions:
       contents: none
+
     runs-on: ubuntu-latest
-    needs: build_and_publish
+
+    needs: Build_and_Publish_Github
+
     environment:
       name: 'Development'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: set lower case repo name
+      - name: Set lower case repo name
         run: echo "REPO_LC=${REPO,,}" >>${GITHUB_ENV}
         env:
           REPO: '${{ github.repository }}'
@@ -73,25 +67,18 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          # enable-AzPSSession: false
-          # environment: azurecloud
-          # allow-no-subscriptions: false
-          # audience: api://AzureADTokenExchange  
-          # auth-type: SERVICE_PRINCIPAL
-          # client-id: ${{ secrets.REGISTRY_USERNAME }}
-          # tenant-id: 054ac6ef-3ff9-4003-8495-fcffd3e9cbc9
         
-      - name: login to azure docker
+      - name: Login to azure docker
         uses: azure/docker-login@v1
         with:
           login-server: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}    
 
-      - name: Docker Build & Push to ACR
+      - name: Docker Build Image
         run: docker build -t ${{ env.CONTAINER_REGISTRY }}/$REPO_LC:latest .
 
-      - name: publishazure
+      - name: Docker Push to Azure Container-registry
         run: docker push ${{ env.CONTAINER_REGISTRY }}/$REPO_LC:latest 
         
       - name: Deploy to Azure Web App
@@ -103,5 +90,5 @@ jobs:
           # images: ${{ env.CONTAINER_REGISTRY }}/schivass/fork_vigneron_monteil:latest
           package: './examples'
 
-      - name: logout
+      - name: Azurelogout
         run: az logout
