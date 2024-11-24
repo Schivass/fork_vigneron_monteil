@@ -1,3 +1,6 @@
+# More info about this configuration can be found on (https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_web_app)
+
+
 resource "azurerm_service_plan" "app_service_plan" {
   name                = var.app_name
   location            = var.location
@@ -13,6 +16,8 @@ resource "azurerm_linux_web_app" "app_service" {
   resource_group_name = var.resource_group_name
   service_plan_id = azurerm_service_plan.app_service_plan.id
 
+  # That's the part who make a self identity for our app service 
+  # More info (https://learn.microsoft.com/en-us/azure/developer/terraform/authenticate-to-azure-with-managed-identity-for-azure-services)
   identity {
     type = "SystemAssigned"
   }

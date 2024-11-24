@@ -1,3 +1,6 @@
+# We don't have use all the example but it can be see in full on (https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server)
+
+
 resource "azurerm_postgresql_flexible_server" "postgresql_server" {
   administrator_login = var.administrateur_login
   administrator_password = var.administrateur_password

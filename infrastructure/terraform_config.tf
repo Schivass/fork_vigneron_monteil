@@ -9,6 +9,8 @@ terraform {
       version = "~> 4.0"
     }
 
+    # not needed but we discuss with other teams and we checked the previous repo of week-3 and 
+    # we thought it was good to have this for later if we have to add features
     azuread = {
       source  = "hashicorp/azuread"
       version = "~> 3.0"

@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "resource_group_cloud" {
   location = var.location  
 }
 
-# locals variables for readeability
+# locals variables for readeability and better variables management
 locals {
   resource_group = azurerm_resource_group.resource_group_cloud.name
   location = azurerm_resource_group.resource_group_cloud.location
@@ -13,6 +13,7 @@ locals {
 # First module is about app service
 module "app_service" {
   source = "./modules/app_service"
+  # We saw this on the previous repo and i think it's a good thing for code testing
   # count = var.enable_app_service ? 1 : 0
 
   resource_group_name = local.resource_group
@@ -51,6 +52,7 @@ module "database" {
   administrateur_password = var.administrateur_password
 }
 
+# the third module is about storage blob
 module "quotes_storage" {
   source = "./modules/quotes_storage"
   # count = var.enable_storage ? 1 : 0
@@ -60,6 +62,7 @@ module "quotes_storage" {
   storage_account_name = "qstorage132"
 }
 
+# Don't needed here because we don't use it but it's a good practice
 locals {
   storage_url = try(module.quotes_storage[0].url, null)
 }
