@@ -1,16 +1,16 @@
 resource "azurerm_resource_group" "resource_group_cloud" {
-  # Create a resource group
   name     = var.resource_group_name
   location = var.location  
 }
 
-# locals variables for readeability and better variables management
 locals {
   resource_group = azurerm_resource_group.resource_group_cloud.name
   location = azurerm_resource_group.resource_group_cloud.location
   app_name= "projet-terraform-${var.github_username}"
+  app_name_lowercase_and_numbers = lower(replace(local.app_name, "/[^a-z0-9]/", ""))
+
 }
-# First module is about app service
+
 module "app_service" {
   source = "./modules/app_service"
   # We saw this on the previous repo and i think it's a good thing for code testing
@@ -38,7 +38,6 @@ module "app_service" {
   storage_account_id = module.quotes_storage.storage_account_id
 }
 
-# Second module is about database
 module "database" {
   source = "./modules/database"
   # count = var.enable_database ? 1 : 0
@@ -52,14 +51,13 @@ module "database" {
   administrateur_password = var.administrateur_password
 }
 
-# the third module is about storage blob
 module "quotes_storage" {
   source = "./modules/quotes_storage"
   # count = var.enable_storage ? 1 : 0
 
   resource_group_name = local.resource_group
   location = local.location
-  storage_account_name = "qstorage132"
+  storage_account_name = "${local.app_name_lowercase_and_numbers}"
 }
 
 # Don't needed here because we don't use it but it's a good practice
