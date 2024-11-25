@@ -75,3 +75,11 @@ variable "storage_account_id" {
   type = string 
   description = "The storage account id" 
 }
+
+variable "virtual_network_name" {
+  type = string
+}
+
+variable "network_security_group_id" {
+  type = string
+}

@@ -8,3 +8,13 @@ output "name_of_resource_group" {
 #   value = "https://${azurerm_linux_web_app.app_service.default_hostname}"
 #   description = "The URL of the app service"
 # }
+
+output "database_subnet_name" {
+  value = "database_sn"
+}
+output "app_subnet_name" {
+  value = "app_service_sn"
+}
+output "blob_subnet_name" {
+  value = "blob_storage_sn"
+}

@@ -17,11 +17,6 @@ variable "location" {
     description = "The geographical hosting location"
 }
 
-variable "subnet_name" {
-    type = string
-    description = "The name of the vnet subnet"
-}
-
 variable "security_group_name" {
   type = string
 }

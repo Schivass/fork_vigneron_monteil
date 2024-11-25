@@ -12,3 +12,11 @@ variable "storage_account_name" {
   description = "The name of the storage account."
   type        = string
 }
+
+variable "virtual_network_name" {
+    type = string
+    description = "The name of the vnet subnet"
+}
+variable "network_security_group_id" {
+  type = string
+}

@@ -19,3 +19,24 @@ resource "azurerm_storage_blob" "storage_blob" {
   storage_container_name = azurerm_storage_container.storage_container.name
   type                   = "Block"
 }
+
+resource "azurerm_subnet" "blob_storage" {
+  name                 = "blob_storage_sn"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = var.virtual_network_name
+  address_prefixes     = ["10.0.3.0/24"]
+
+  delegation {
+    name = "blob_storage_server"
+    service_delegation {
+      name    = "Microsoft.Web/hostingEnvironments"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
+}
+
+# Link into subnet
+resource "azurerm_subnet_network_security_group_association" "database" {
+  subnet_id                 = azurerm_subnet.blob_storage.id
+  network_security_group_id = var.network_security_group_id
+}
