@@ -1,3 +1,9 @@
+## Members
+* Thomas Vigneron
+* Maël Monteil
+* Louis Landouzy
+* Julien Kana
+
 ## Composition of this code
 
 1. **variables.tf**:
